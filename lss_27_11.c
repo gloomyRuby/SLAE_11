@@ -12,80 +12,70 @@ int lss_memsize_27_11(int n) {
 
 void solve()
 {
-    int n, *d;
-    double **A, *B, *X, *Y, tmp, sum = 0;
+    int n;
 
     FILE *input = fopen("in.txt", "r");
     fscanf(input, "%d", &n);
-
-    X = (double *)malloc(n * sizeof(double));
-    Y = (double *)malloc(n * sizeof(double));
-    d = (int *)malloc(n * sizeof(int));
-    B = (double *)malloc(n * sizeof(double));
-    A = (double **)malloc(n * sizeof(double*));
-    for (int l = 0; l < n; ++l) {
-        A[l] = (double *)malloc(n * sizeof(double));
-    }
+    double A[n * n], B[n], X[n], tmp[2 * lss_memsize_27_11(n)], temp, sum = 0;
 
     for (int i = 0; i < n; ++i) {
         for (int j = 0; j < n; ++j) {
-            fscanf(input, "%lf", &tmp);
-            A[i][j] = tmp;
+            fscanf(input, "%lf", &temp);
+            A[i * n + j] = temp;
         }
     }
     for (int k = 0; k < n; ++k) {
         fscanf(input, "%lf", &B[k]);
-//        B[k] = tmp;
+//        B[k] = temp;
     }
     fclose(input);
 
-    // A = St * d * S
+    // A = St * tmp * S
     for (int i = 0; i < n; ++i) {
         for (int k = 0; k < i; ++k) {
-            sum += A[k][i] * A[k][i] * d[k];
+            sum += A[k * n + i] * A[k * n + i] * tmp[k];
         }
-        d[i] = sgn(A[i][i] - sum);
+        tmp[i] = sgn(A[i * n + i] - sum);
         sum = 0;
 
         for (int j = 0; j < n; ++j) {
             if (i == j) {
                 for (int k = 0; k < i; ++k) {
-                    sum += A[k][i] * A[k][i] * d[k];
+                    sum += A[k * n + i] * A[k * n + i] * tmp[k];
                 }
-                tmp = sqrt(abs(A[i][i] - sum));
-                A[i][i] = tmp;
+                temp = sqrt(abs(A[i * n + i] - sum));
+                A[i * n + i] = temp;
                 sum = 0;
             } else if (i < j) {
                 for (int k = 0; k < i; ++k) {
-                    sum += A[k][i] * d[k] * A[k][j];
+                    sum += A[k * n + i] * tmp[k] * A[k * n + j];
                 }
-                tmp = (A[i][j] - sum) / A[i][i] * d[i];
-                A[i][j] = tmp;
+                temp = (A[i * n + j] - sum) / A[i * n + i] * tmp[i];
+                A[i * n + j] = temp;
                 sum = 0;
             } else {
-                A[i][j] = 0;
+                A[i * n + j] = 0;
             }
         }
     }
 
-    // St * Y = b
+    // St * tmp = b
     transpose(n, A);
     for (int i = 0; i < n; ++i) {
         for (int j = 0; j < i; ++j) {
-            sum += A[i][j] * Y[j] * d[j];
+            sum += A[i * n + j] * tmp[n + j] * tmp[j];
         }
-        Y[i] = (B[i] - sum) / A[i][i] * d[i];
+        tmp[n + i] = (B[i] - sum) / A[i * n + i] * tmp[i];
         sum = 0;
     }
 
-    // d * S * X = Y
-    // d * S
+    // tmp * S * X = tmp
     transpose(n, A);
     for (int i = n - 1; i >= 0; i--) {
         for (int j = n - 1; j > i; --j) {
-            sum += A[i][j] * X[j];
+            sum += A[i * n + j] * X[j];
         }
-        X[i] = (Y[i] - sum) / A[i][i];
+        X[i] = (tmp[n + i] - sum) / A[i * n + i];
         sum = 0;
     }
 
@@ -96,14 +86,14 @@ void solve()
     fclose(out);
 }
 
-void transpose(int n, double **A)
+void transpose(int n, double *A)
 {
     double  tmp;
     for (int i = 0; i < n; ++i) {
         for (int j = i; j < n; ++j) {
-            tmp = A[j][i];
-            A[j][i] = A[i][j];
-            A[i][j] = tmp;
+            tmp = A[j * n + i];
+            A[j * n + i] = A[i * n + j];
+            A[i * n + j] = tmp;
         }
     }
 }
