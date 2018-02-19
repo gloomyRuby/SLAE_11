@@ -1,34 +1,16 @@
 #include "lss_27_11.h"
 
-int lss_27_11(int n, double* A, double* B, double* X, double* tmp) {
+void transpose(int n, double *A);
 
-    return 0;
-}
+int is_symmetric(int n, double *A);
 
+int lss_27_11(int n, double *A, double *B, double *X, double *tmp) {
 
-int lss_memsize_27_11(int n) {
-    return n;
-}
+    // Cholesky decomposition works only with symmetric matrix
+    if (is_symmetric(n, A) != 0)
+        return -1;
 
-void solve()
-{
-    int n;
-
-    FILE *input = fopen("in.txt", "r");
-    fscanf(input, "%d", &n);
-    double A[n * n], B[n], X[n], tmp[2 * lss_memsize_27_11(n)], temp, sum = 0;
-
-    for (int i = 0; i < n; ++i) {
-        for (int j = 0; j < n; ++j) {
-            fscanf(input, "%lf", &temp);
-            A[i * n + j] = temp;
-        }
-    }
-    for (int k = 0; k < n; ++k) {
-        fscanf(input, "%lf", &B[k]);
-//        B[k] = temp;
-    }
-    fclose(input);
+    double  temp, sum = 0;
 
     // A = St * tmp * S
     for (int i = 0; i < n; ++i) {
@@ -50,7 +32,10 @@ void solve()
                 for (int k = 0; k < i; ++k) {
                     sum += A[k * n + i] * tmp[k] * A[k * n + j];
                 }
-                temp = (A[i * n + j] - sum) / A[i * n + i] * tmp[i];
+                if (A[i * n + i] * tmp[i] != 0)
+                    temp = (A[i * n + j] - sum) / A[i * n + i] * tmp[i];
+                else
+                    return 1;
                 A[i * n + j] = temp;
                 sum = 0;
             } else {
@@ -65,7 +50,10 @@ void solve()
         for (int j = 0; j < i; ++j) {
             sum += A[i * n + j] * tmp[n + j] * tmp[j];
         }
+        if (A[i * n + i] * tmp[i] != 0)
         tmp[n + i] = (B[i] - sum) / A[i * n + i] * tmp[i];
+        else
+            return 1;
         sum = 0;
     }
 
@@ -75,15 +63,18 @@ void solve()
         for (int j = n - 1; j > i; --j) {
             sum += A[i * n + j] * X[j];
         }
+        if (A[i * n + i] != 0)
         X[i] = (tmp[n + i] - sum) / A[i * n + i];
+        else
+            return 1;
         sum = 0;
     }
 
-    FILE *out = fopen("out_27_11.txt", "w");
-    for (int i = 0; i < n; ++i) {
-        fprintf(out, "%lf\n", X[i]);
-    }
-    fclose(out);
+    return 0;
+}
+
+int lss_memsize_27_11(int n) {
+    return n;
 }
 
 void transpose(int n, double *A)
@@ -96,4 +87,16 @@ void transpose(int n, double *A)
             A[i * n + j] = tmp;
         }
     }
+}
+
+int is_symmetric(int n, double *A)
+{
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
+            if (A[i *n + j] != A[j * n + i])
+                return 1;
+        }
+    }
+
+    return 0;
 }
