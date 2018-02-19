@@ -16,5 +16,8 @@
 
 int lss_27_11(int n, double* A, double* B, double* X, double* tmp);
 int lss_memsize_27_11(int n);
+void transpose(int n, double **A);
+
+void solve();
 
 #endif //LSS_27_11_LSS_27_11_H
