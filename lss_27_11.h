@@ -14,9 +14,9 @@
 #define sgn(a)  ((a) > 0 ? (1) : -(1))
 #define abs(a)  ((a) > 0 ? (a) : -(a))
 
-int lss_27_11(int n, double* A, double* B, double* X, double* tmp);
-int lss_memsize_27_11(int n);
 
-void solve();
+int lss_27_11(int n, double* A, double* B, double* X, double* tmp);
+
+int lss_memsize_27_11(int n);
 
 #endif //LSS_27_11_LSS_27_11_H
