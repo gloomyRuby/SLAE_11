@@ -12,6 +12,8 @@ int lss_27_11(int n, double *A, double *B, double *X, double *tmp) {
 
     double  temp, sum = 0;
 
+    // tmp[0..n-1] is d matrix
+    // tmp[n..2n-1] is Y matrix
     // A = St * tmp * S
     for (int i = 0; i < n; ++i) {
         for (int k = 0; k < i; ++k) {
