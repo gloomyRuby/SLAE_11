@@ -1,5 +1,7 @@
 #include "lss_27_11.h"
 
+#define epsilon 1e7
+
 void transpose(int n, double *A);
 
 int is_symmetric(int n, double *A);
@@ -95,7 +97,7 @@ int is_symmetric(int n, double *A)
 {
     for (int i = 0; i < n; ++i) {
         for (int j = 0; j < n; ++j) {
-            if (A[i *n + j] != A[j * n + i])
+            if ((A[i *n + j] - A[j * n + i]) > epsilon)
                 return 1;
         }
     }
